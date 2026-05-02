@@ -78,6 +78,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
   const [isScannerOpen, setIsScannerOpen] = React.useState(false);
+  
+  const viewportRef = React.useRef<HTMLDivElement>(null);
+
+  // Reset scroll position on route change
+  React.useEffect(() => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   const filteredNavItems = navItems.filter(item => {
     if (!currentUser) return false;
@@ -227,7 +236,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-app-bg transition-colors duration-300">
         {/* Header */}
-        <header className="h-16 bg-app-bg border-b border-border-dim flex items-center justify-between px-4 md:px-8 z-10 transition-colors duration-300" id="header">
+        <header className="sticky top-0 h-16 bg-app-bg/80 backdrop-blur-md border-b border-border-dim flex items-center justify-between px-4 md:px-8 z-40 transition-colors duration-300" id="header">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
@@ -256,10 +265,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
               <button 
                 onClick={toggleTheme} 
-                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all active:scale-95 border border-border-dim shadow-sm hidden sm:flex"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all active:scale-95 border border-border-dim shadow-sm flex"
                 aria-label="Toggle theme"
               >
-                {theme === "light" ? <Moon className="w-5 h-5 text-slate-600" /> : <Sun className="w-5 h-5 text-brand" />}
+                {theme === "light" ? <Moon className="w-4 h-4 md:w-5 h-5 text-slate-600" /> : <Sun className="w-4 h-4 md:w-5 h-5 text-brand" />}
               </button>
 
               <div className="relative">
@@ -338,7 +347,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Viewport */}
-        <main className="flex-1 overflow-y-auto p-2 md:p-3 custom-scrollbar bg-app-bg transition-colors duration-300" id="main_viewport">
+        <main ref={viewportRef} className="flex-1 overflow-y-auto p-2 md:p-3 custom-scrollbar bg-app-bg transition-colors duration-300" id="main_viewport">
           {children}
         </main>
       </div>
