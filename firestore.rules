@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // -------------------------------------------------------------------------
+    // GLOBALS & REUSABLE HELPERS
+    // -------------------------------------------------------------------------
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isPlatformAdmin() {
+      return isSignedIn() && request.auth.token.is_platform_admin == true;
+    }
+
+    function getTenantId() {
+      return request.auth.token.tenant_id;
+    }
+
+    function belongsToTenant(tenantId) {
+      return isSignedIn() && getTenantId() == tenantId;
+    }
+
+    function hasPermission(permission) {
+      return isSignedIn() && permission in request.auth.token.permissions;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if isPlatformAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // TENANT SCOPED COLLECTIONS
+    // -------------------------------------------------------------------------
+    
+    match /tenants/{tenantId} {
+      allow get: if belongsToTenant(tenantId);
+      allow update: if belongsToTenant(tenantId) && hasPermission('tenant_settings_write');
+
+      // ASSETS MODULE
+      match /assets/{assetId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('assets_read');
+        allow create: if belongsToTenant(tenantId) && hasPermission('assets_write') 
+          && request.resource.data.tenant_id == tenantId;
+        allow update: if belongsToTenant(tenantId) && hasPermission('assets_write')
+          && request.resource.data.tenant_id == resource.data.tenant_id; // Immutable tenant_id
+      }
+
+      // MAINTENANCE MODULE
+      match /maintenance_tickets/{ticketId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('maintenance_read');
+        allow write: if belongsToTenant(tenantId) && hasPermission('maintenance_write');
+      }
+
+      // VEHICLES / GPS MODULE
+      match /vehicles/{vehicleId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('gps_read');
+        allow write: if belongsToTenant(tenantId) && hasPermission('gps_write');
+      }
+
+      match /gps_tracking_logs/{logId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('gps_read');
+        allow write: if false; // Server-only via Admin SDK
+      }
+
+      // COMPLIANCE & AUDIT
+      match /audit_items/{itemId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('compliance_read');
+        allow write: if belongsToTenant(tenantId) && hasPermission('compliance_write');
+      }
+
+      // SYSTEM LOGS
+      match /activity_logs/{logId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('logs_read');
+        allow write: if false; // Server-only
+      }
+
+      match /depreciation_logs/{logId} {
+        allow read: if belongsToTenant(tenantId) && hasPermission('finance_read');
+        allow write: if false; // Server-only
+      }
+
+      // NOTIFICATIONS
+      match /notifications/{notifId} {
+        allow read: if belongsToTenant(tenantId) && resource.data.userId == request.auth.uid;
+        allow update: if belongsToTenant(tenantId) && resource.data.userId == request.auth.uid 
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_read']);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // PLATFORM ADMIN PATHS
+    // -------------------------------------------------------------------------
+    match /admin/{document=**} {
+      allow read, write: if isPlatformAdmin();
+    }
+  }
+}

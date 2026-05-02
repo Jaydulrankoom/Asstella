@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.env
+.git
+.github
+dist
+src
+flutter_app
+tests
+docs
+README.md
+Dockerfile
+.dockerignore

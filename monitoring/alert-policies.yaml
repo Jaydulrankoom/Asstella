@@ -1,0 +1,37 @@
+# Google Cloud Monitoring Alert Policies
+combiner: OR
+enabled: true
+conditions:
+  - displayName: "API High Latency (p99 > 3s)"
+    conditionThreshold:
+      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/request_latencies"'
+      comparison: COMPARISON_GT
+      thresholdValue: 3000
+      duration: "60s"
+      aggregations:
+        - alignmentPeriod: "60s"
+          perSeriesAligner: ALIGN_PERCENTILE_99
+
+  - displayName: "API High Error Rate (> 2%)"
+    conditionThreshold:
+      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/request_count" AND metric.labels.response_code_class = "5xx"'
+      comparison: COMPARISON_GT
+      thresholdValue: 0.02
+      duration: "300s"
+      aggregations:
+        - alignmentPeriod: "300s"
+          perSeriesAligner: ALIGN_RATE
+
+  - displayName: "Firestore Read Quota Alert (> 80%)"
+    conditionThreshold:
+      filter: 'resource.type = "firestore_instance" AND metric.type = "firestore.googleapis.com/document/read_ops_count"'
+      comparison: COMPARISON_GT
+      thresholdValue: 40000 # Spark plan limit is 50k
+      duration: "60s"
+
+  - displayName: "Cloud Run Scale Warning (> 15 instances)"
+    conditionThreshold:
+      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/container/instance_count"'
+      comparison: COMPARISON_GT
+      thresholdValue: 15
+      duration: "0s"

@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isTenantOwner(tenantId) { return request.auth.token.tenant_id == tenantId; }
+
+    // Tenant-Scoped Rules
+    match /tenants/{tenantId} {
+      allow get: if isSignedIn() && isTenantOwner(tenantId);
+      
+      match /users/{userId} {
+        allow get: if isSignedIn() && isTenantOwner(tenantId) && (request.auth.uid == userId || isAdmin(tenantId));
+        allow list: if isSignedIn() && isTenantOwner(tenantId) && isAdmin(tenantId);
+      }
+
+      match /assets/{assetId} {
+        allow list, get: if isSignedIn() && isTenantOwner(tenantId);
+        allow create: if isVerified() && isTenantOwner(tenantId) && isValidAsset(incoming()) && isValidId(assetId);
+        allow update: if isVerified() && isTenantOwner(tenantId) && isValidAsset(incoming()) && (
+          // System updates (immutable fields)
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'condition', 'currentBookValue', 'updatedAt'])
+          || isAdmin(tenantId)
+        );
+      }
+
+      match /maintenance_tickets/{ticketId} {
+        allow list, get: if isSignedIn() && isTenantOwner(tenantId);
+        allow create: if isVerified() && isTenantOwner(tenantId) && isValidTicket(incoming()) && isValidId(ticketId);
+      }
+    }
+
+    // Admin Helper (requires a trusted doc)
+    function isAdmin(tenantId) {
+      return get(/databases/$(database)/documents/tenants/$(tenantId)/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Validation Blueprints
+    function isValidAsset(data) {
+      return data.tenantId == request.auth.token.tenant_id 
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.assetCode is string && data.assetCode.size() <= 64
+        && data.status in ['active', 'maintenance', 'disposed', 'transferred', 'lost']
+        && (data.purchaseValue == null || data.purchaseValue >= 0);
+    }
+
+    function isValidTicket(data) {
+       return data.tenantId == request.auth.token.tenant_id
+        && data.assetId is string && data.ticketNo is string
+        && data.status in ['open', 'assigned', 'in_progress', 'closed'];
+    }
+  }
+}

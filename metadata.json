@@ -1,0 +1,6 @@
+{
+  "name": "Asstella",
+  "description": "Enterprise Asset Control Platform - Multi-tenant SaaS ERP for fixed asset lifecycle management including QR tracking, IFRS depreciation, and audit control.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["Asset Management", "Financial Reporting", "QR Tracking", "Maintenance Control"]
+}

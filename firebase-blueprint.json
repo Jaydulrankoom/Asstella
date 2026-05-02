@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "Tenant": {
+      "title": "Tenant",
+      "description": "Enterprise tenant configuration",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "features": { "type": "object" },
+        "settings": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name"]
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "Fixed asset item",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "branchId": { "type": "string" },
+        "status": { "type": "string" },
+        "purchaseValue": { "type": "number" },
+        "bookValue": { "type": "number" },
+        "tenant_id": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "name", "tenant_id"]
+    },
+    "MaintenanceTicket": {
+      "title": "Maintenance Ticket",
+      "description": "Repair or service request",
+      "type": "object",
+      "properties": {
+        "assetId": { "type": "string" },
+        "status": { "type": "string" },
+        "description": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["assetId", "status", "tenantId"]
+    }
+  },
+  "firestore": {
+    "tenants/{tenantId}": {
+      "schema": "Tenant",
+      "description": "Root tenant document"
+    },
+    "tenants/{tenantId}/assets/{assetId}": {
+      "schema": "Asset",
+      "description": "Asset subcollection"
+    },
+    "tenants/{tenantId}/maintenance_tickets/{ticketId}": {
+      "schema": "MaintenanceTicket",
+      "description": "Maintenance subcollection"
+    }
+  }
+}
