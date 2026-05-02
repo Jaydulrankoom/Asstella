@@ -176,14 +176,14 @@ export default function Dashboard() {
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Real-time overview of your asset ecosystem</p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <div className="bg-card-bg border border-border-dim rounded-xl p-1 flex flex-wrap items-center gap-y-2 lg:gap-2 shadow-sm overflow-hidden min-w-0">
+            <div className="bg-card-bg border border-border-dim rounded-xl p-1 flex items-center lg:gap-2 shadow-sm overflow-x-auto no-scrollbar min-w-0">
               <FilterSelect id="f_comp" label="Company" options={["All Companies", "Global HQ", "Regional Office"]} value={filters.company} onChange={(v: string) => handleFilterChange("company", v)} />
               <FilterSelect id="f_branch" label="Branch" options={["All Branches", "New York", "London", "Tokyo"]} value={filters.branch} onChange={(v: string) => handleFilterChange("branch", v)} />
               <FilterSelect id="f_dept" label="Department" options={["All Departments", "IT", "HR", "Finance", "Operations"]} value={filters.department} onChange={(v: string) => handleFilterChange("department", v)} />
               <FilterSelect id="f_loc" label="Location" options={["All Locations", "Floor 1", "Floor 2", "Warehouse A"]} value={filters.location} onChange={(v: string) => handleFilterChange("location", v)} />
               <FilterSelect id="f_cat" label="Asset Category" options={["All Categories", "IT Equipment", "Machinery", "Furniture", "Vehicles"]} value={filters.category} onChange={(v: string) => handleFilterChange("category", v)} />
-              <div className="hidden lg:block w-px h-4 bg-border-dim mx-1" />
-              <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-lg border border-border-dim/30">
+              <div className="hidden lg:block w-px h-4 bg-border-dim mx-1 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-lg border border-border-dim/30 mx-1 shrink-0">
                 <Calendar className="w-3 h-3 text-brand" />
                 <span className="text-[9px] font-black uppercase whitespace-nowrap">01 May - 31 May 2024</span>
               </div>
