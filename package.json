@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "test": "echo 'No tests configured'",
     "start": "node server.ts"
   },
   "dependencies": {

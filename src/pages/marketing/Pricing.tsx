@@ -122,7 +122,7 @@ export default function MarketingPricing() {
               <div className="space-y-4 mb-12 flex-1">
                 {plan.features.map(f => (
                   <div key={f} className="flex items-start gap-3">
-                    <div className={cn("w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5", plan.featured ? "bg-brand/20 text-brand" : "bg-emerald-500/10 text-emerald-500")}>
+                    <div className={cn("w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5", plan.featured ? "bg-blue-600/20 text-blue-600" : "bg-emerald-500/10 text-emerald-500")}>
                       <Check className="w-3 h-3" />
                     </div>
                     <span className="text-xs font-bold tracking-wide">{f}</span>
@@ -135,7 +135,7 @@ export default function MarketingPricing() {
                 className={cn(
                   "w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all active:scale-95",
                   plan.featured 
-                    ? "bg-brand text-white shadow-xl shadow-brand/20 hover:scale-[1.02]" 
+                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20 hover:scale-[1.02]" 
                     : "bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20"
                 )}
               >
@@ -149,7 +149,7 @@ export default function MarketingPricing() {
         <div className="bg-slate-50 dark:bg-white/5 rounded-[3rem] p-12 md:p-20 border border-slate-100 dark:border-white/5">
            <div className="flex flex-col md:flex-row gap-12 items-start">
               <div className="md:w-1/3">
-                 <h2 className="text-sm font-black text-brand uppercase tracking-[0.4em] mb-4">Enterprise</h2>
+                 <h2 className="text-sm font-black text-blue-600 uppercase tracking-[0.4em] mb-4">Enterprise</h2>
                  <h3 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-[0.9] mb-6">Need a custom <br /> environment?</h3>
                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">We offer tailored deployment options including air-gapped systems and custom data residency.</p>
               </div>

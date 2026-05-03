@@ -21,7 +21,8 @@ import {
   Building2,
   DollarSign,
   Clock,
-  Languages
+  Languages,
+  X
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
@@ -122,6 +123,7 @@ export default function SettingsPage() {
           <div className="bg-card-bg border border-border-dim rounded-2xl sm:rounded-3xl p-2 shadow-xl overflow-x-auto custom-scrollbar no-scrollbar">
              <nav className="flex lg:flex-col gap-1 min-w-max lg:min-w-0">
                 <NavButton id="general" label="Profile" fullLabel="Company Profile" icon={Building2} active={activeTab} onClick={setActiveTab} />
+                <NavButton id="organization" label="Org" fullLabel="Organization Setup" icon={Building2} active={activeTab} onClick={setActiveTab} />
                 <NavButton id="roles" label="Roles" fullLabel="Roles & Permissions" icon={Shield} active={activeTab} onClick={setActiveTab} />
                 <NavButton id="notifications" label="Notifs" fullLabel="Notification Center" icon={Bell} active={activeTab} onClick={setActiveTab} />
                 <NavButton id="security" label="Security" fullLabel="Security & Access" icon={Lock} active={activeTab} onClick={setActiveTab} />
@@ -184,6 +186,69 @@ export default function SettingsPage() {
                 </motion.div>
              )}
 
+             {activeTab === "organization" && (
+                <motion.div 
+                   key="organization" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                   className="space-y-6"
+                >
+                   <div className="bg-card-bg border border-border-dim rounded-2xl sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 text-center sm:text-left">
+                         <div>
+                            <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Organization Structure</h3>
+                            <p className="text-xs text-slate-500 mt-1">Manage branches, departments, and cross-functional teams.</p>
+                         </div>
+                         <button className="flex items-center justify-center gap-2 bg-brand text-white px-6 py-3 rounded-xl sm:rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-105 transition-all active:scale-95 whitespace-nowrap">
+                            <Plus className="w-4 h-4" /> Add Branch
+                         </button>
+                      </div>
+
+                      <div className="space-y-6 text-sm">
+                         {/* Mock Branches */}
+                         {[
+                           { name: "Global HQ (New York)", depts: ["Executive Board", "Operations", "Finance"] },
+                           { name: "EMEA Branch (London)", depts: ["Logistics", "Operations", "Maintenance"] },
+                           { name: "APAC Hub (Singapore)", depts: ["IT Support", "Procurement"] }
+                         ].map((branch, i) => (
+                           <div key={i} className="border border-border-dim rounded-2xl overflow-hidden group">
+                              <div className="bg-slate-50 dark:bg-white/5 p-4 sm:p-6 flex items-center justify-between">
+                                 <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-slate-200 dark:bg-white/10 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-400">
+                                       <Building2 className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                       <h4 className="font-black text-slate-900 dark:text-white tracking-tight">{branch.name}</h4>
+                                       <p className="text-[10px] text-slate-500 font-bold uppercase">{branch.depts.length} Departments</p>
+                                    </div>
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                     <button className="p-2 sm:p-3 bg-white dark:bg-white/5 border border-border-dim rounded-xl hover:text-brand transition-all"><Edit3 className="w-4 h-4" /></button>
+                                     <button className="p-2 sm:p-3 bg-white dark:bg-white/5 border border-border-dim rounded-xl hover:text-rose-500 transition-all"><Trash2 className="w-4 h-4" /></button>
+                                 </div>
+                              </div>
+                              <div className="p-4 sm:p-6 flex flex-wrap gap-2">
+                                 {branch.depts.map(dept => (
+                                    <div key={dept} className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border border-border-dim rounded-lg text-[10px] font-black uppercase text-slate-600 dark:text-slate-400">
+                                       {dept}
+                                       <button className="hover:text-rose-500"><X className="w-3 h-3" /></button>
+                                    </div>
+                                 ))}
+                                 <button className="flex items-center gap-2 px-3 py-1.5 bg-brand/5 text-brand border border-brand/20 rounded-lg text-[10px] font-black uppercase hover:bg-brand hover:text-white transition-all">
+                                    <Plus className="w-3 h-3" /> Add Dept
+                                 </button>
+                                 <button className="flex items-center gap-2 px-3 py-1.5 bg-brand/5 text-brand border border-brand/20 rounded-lg text-[10px] font-black uppercase hover:bg-brand hover:text-white transition-all">
+                                    <Plus className="w-3 h-3" /> Add Cost Center
+                                 </button>
+                                 <button className="flex items-center gap-2 px-3 py-1.5 bg-brand/5 text-brand border border-brand/20 rounded-lg text-[10px] font-black uppercase hover:bg-brand hover:text-white transition-all">
+                                    <Plus className="w-3 h-3" /> Add Location
+                                 </button>
+                              </div>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </motion.div>
+             )}
+
              {activeTab === "roles" && (
                 <motion.div 
                   key="roles" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
@@ -221,6 +286,47 @@ export default function SettingsPage() {
                                </div>
                             </div>
                          ))}
+                      </div>
+                   </div>
+
+                   <div className="bg-card-bg border border-border-dim rounded-2xl sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl overflow-x-auto">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 text-center sm:text-left">
+                         <div>
+                            <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Permission Matrix</h3>
+                            <p className="text-xs text-slate-500 mt-1">Cross-functional access rights overview.</p>
+                         </div>
+                      </div>
+                      <div className="min-w-[600px]">
+                         <table className="w-full text-left border-collapse bg-app-bg rounded-xl overflow-hidden shadow-inner">
+                            <thead>
+                               <tr className="bg-slate-50/50 dark:bg-white/5 border-b border-border-dim text-[9px] font-black uppercase text-slate-400 tracking-widest">
+                                  <th className="p-4">Module</th>
+                                  <th className="p-4 text-center">Super Admin</th>
+                                  <th className="p-4 text-center">Company Admin</th>
+                                  <th className="p-4 text-center">Asset Manager</th>
+                                  <th className="p-4 text-center">Employee</th>
+                               </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border-dim text-sm text-slate-600 dark:text-slate-400">
+                               {[
+                                  { mod: "Asset Tracking", perms: [true, true, true, false] },
+                                  { mod: "Depreciation & Finance", perms: [true, true, false, false] },
+                                  { mod: "User Governance", perms: [true, true, false, false] },
+                                  { mod: "QR/Barcode Generation", perms: [true, true, true, false] },
+                                  { mod: "Asset Request & Checkout", perms: [true, true, true, true] },
+                                  { mod: "System Configurations", perms: [true, false, false, false] },
+                               ].map((row, idx) => (
+                                  <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-white/5">
+                                     <td className="p-4 font-bold text-[11px] uppercase tracking-wide text-slate-700 dark:text-slate-300">{row.mod}</td>
+                                     {row.perms.map((p, pIdx) => (
+                                        <td key={pIdx} className="p-4 text-center">
+                                           {p ? <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span> : <span className="inline-block w-2.5 h-2.5 rounded-full bg-rose-500/20"></span>}
+                                        </td>
+                                     ))}
+                                  </tr>
+                               ))}
+                            </tbody>
+                         </table>
                       </div>
                    </div>
 

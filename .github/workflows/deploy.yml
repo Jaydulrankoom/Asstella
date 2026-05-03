@@ -1,88 +1,18 @@
-name: AssetsFlow CI/CD
+name: Deploy Vite App
 
 on:
   push:
-    branches: [ "main" ]
-
-env:
-  PROJECT_ID: assetsflow-enterprise
-  REGION: asia-south1
-  GAR_LOCATION: asia-south1-docker.pkg.dev
-  SERVICE_NAME: assetsflow-api
-  REPOSITORY: assetsflow-registry
+    branches: [ main ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - name: Run Tests (Firebase Emulator)
-        run: |
-          npm install -g firebase-tools
-          firebase emulators:exec --project demo-assetsflow "npm test"
-
-  deploy-backend:
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-deployer@assetsflow-enterprise.iam.gserviceaccount.com'
+      - name: Install dependencies
+        run: npm install
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
-
-      - name: 'Docker Auth'
-        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}
-
-      - name: 'Build and Push'
-        run: |
-          docker build -t ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }} .
-          docker push ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
-
-      - name: 'Deploy to Cloud Run'
-        run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
-            --region ${{ env.REGION }} \
-            --platform managed \
-            --min-instances 1 \
-            --max-instances 20 \
-            --memory 512Mi \
-            --set-secrets="GPS_ENCRYPTION_KEY=GPS_KEY:latest,FIREBASE_SERVICE_ACCOUNT=FIREBASE_SA_KEY:latest"
-
-  deploy-frontend:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - name: Build Flutter Web
-        run: |
-          cd flutter_app
-          flutter pub get
-          flutter build web --release
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}'
-          channelId: live
-          projectId: assetsflow-enterprise
+      - name: Build project
+        run: npm run build

@@ -46,15 +46,39 @@ export default function App() {
           <Routes>
             {/* Public Marketing Website */}
             <Route path="/" element={<MarketingLayout children={<MarketingHome />} />} />
+            
+            {/* Product Routes */}
+            <Route path="/product/asset-register" element={<MarketingLayout children={<MarketingFeatureDetail feature="asset-register" />} />} />
+            <Route path="/product/depreciation" element={<MarketingLayout children={<MarketingFeatureDetail feature="depreciation" />} />} />
+            <Route path="/product/audit" element={<MarketingLayout children={<MarketingFeatureDetail feature="audit" />} />} />
+            <Route path="/product/maintenance" element={<MarketingLayout children={<MarketingFeatureDetail feature="maintenance" />} />} />
+            <Route path="/product/amc" element={<MarketingLayout children={<MarketingFeatureDetail feature="amc" />} />} />
+            <Route path="/product/gps" element={<MarketingLayout children={<MarketingFeatureDetail feature="gps" />} />} />
+
+            {/* Solution Routes */}
+            <Route path="/solution/healthcare" element={<MarketingLayout children={<MarketingFeatureDetail feature="healthcare" />} />} />
+            <Route path="/solution/manufacturing" element={<MarketingLayout children={<MarketingFeatureDetail feature="manufacturing" />} />} />
+            <Route path="/solution/education" element={<MarketingLayout children={<MarketingFeatureDetail feature="education" />} />} />
+
+            {/* Resource Routes */}
+            <Route path="/resource/blog" element={<MarketingLayout children={<MarketingBlog />} />} />
+            <Route path="/resource/docs" element={<MarketingLayout children={<MarketingFeatureDetail feature="docs" />} />} />
+            <Route path="/resource/webinars" element={<MarketingLayout children={<MarketingFeatureDetail feature="webinars" />} />} />
+
+            {/* Company Routes */}
+            <Route path="/company/about" element={<MarketingLayout children={<MarketingAbout />} />} />
+            <Route path="/company/careers" element={<MarketingLayout children={<MarketingFeatureDetail feature="careers" />} />} />
+            <Route path="/company/contact" element={<MarketingLayout children={<MarketingContact />} />} />
+
+            {/* Legacy Routes */}
             <Route path="/pricing" element={<MarketingLayout children={<MarketingPricing />} />} />
             <Route path="/features" element={<MarketingLayout children={<MarketingFeatures />} />} />
-            <Route path="/features/:id" element={<MarketingLayout children={<MarketingFeatureDetail />} />} />
             <Route path="/about" element={<MarketingLayout children={<MarketingAbout />} />} />
             <Route path="/contact" element={<MarketingLayout children={<MarketingContact />} />} />
             <Route path="/blog" element={<MarketingLayout children={<MarketingBlog />} />} />
-            <Route path="/blog/:id" element={<MarketingLayout children={<MarketingBlog />} />} />
-            <Route path="/privacy" element={<MarketingLayout children={<MarketingHome />} />} />
-            <Route path="/terms" element={<MarketingLayout children={<MarketingHome />} />} />
+            
+            <Route path="/legal/privacy" element={<MarketingLayout children={<MarketingHome />} />} />
+            <Route path="/legal/terms" element={<MarketingLayout children={<MarketingHome />} />} />
             <Route path="/login" element={<Navigate to="/app" replace />} />
             
             {/* Dashboard App - Accessible via /app prefix */}

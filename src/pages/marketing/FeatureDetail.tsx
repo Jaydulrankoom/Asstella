@@ -20,11 +20,11 @@ import {
 import { cn } from "@/src/lib/utils";
 
 const featuresData: Record<string, any> = {
-  assets: {
-    title: "Asset Management",
+  "asset-register": {
+    title: "Asset Register",
     icon: Database,
     desc: "The definitive source of truth for your physical infrastructure.",
-    longDesc: "Asstella's Asset Management module provides a high-fidelity digital twin of your entire physical ecosystem. From the moment an asset is onboarded to its eventual retirement, every interaction is logged with military-grade precision.",
+    longDesc: "Asstella's Asset Register provides a high-fidelity digital twin of your entire physical ecosystem. From the moment an asset is onboarded to its eventual retirement, every interaction is logged with military-grade precision.",
     highlights: [
       "Dynamic Attribute Schema: Custom fields for technical specs, location, and owner.",
       "QR & NFC Ecosystem: Instant hardware-to-cloud mapping via mobile scanning.",
@@ -33,8 +33,8 @@ const featuresData: Record<string, any> = {
     ],
     image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200"
   },
-  finance: {
-    title: "Depreciation & Finance",
+  depreciation: {
+    title: "Depreciation Engine",
     icon: Calculator,
     desc: "Audit-ready financial modeling for capital planning.",
     longDesc: "Eliminate the friction between operations and finance. Asstella's fiscal engine automates complex depreciation calculations, ensuring your balance sheet is always accurate and tax-ready.",
@@ -60,7 +60,7 @@ const featuresData: Record<string, any> = {
     image: "https://images.unsplash.com/photo-1454165833767-027ff3302bc5?auto=format&fit=crop&q=80&w=1200"
   },
   maintenance: {
-    title: "Maintenance & Warranty",
+    title: "Maintenance & SLA",
     icon: Wrench,
     desc: "Orchestrate uptime with precision scheduling.",
     longDesc: "Maximize asset lifespan through intelligent preventive maintenance. Asstella tracks every service ticket, warranty period, and replacement cycle to keep your operations running at 100%.",
@@ -86,7 +86,7 @@ const featuresData: Record<string, any> = {
     image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=1200"
   },
   gps: {
-    title: "GPS Vehicle Tracking",
+    title: "GPS Fleet Tracking",
     icon: MapPin,
     desc: "Real-time logistics intelligence.",
     longDesc: "Asstella extends its asset tracking capabilities into the mobile world. Monitor your fleet's location, health, and utilization in real-time within a unified dashboard.",
@@ -98,34 +98,8 @@ const featuresData: Record<string, any> = {
     ],
     image: "https://images.unsplash.com/photo-1559251646-cd60161bc8df?auto=format&fit=crop&q=80&w=1200"
   },
-  reports: {
-    title: "Reports & Analytics",
-    icon: BarChart3,
-    desc: "Turn raw data into strategic foresight.",
-    longDesc: "Move beyond static metrics. Our analytics engine provides multi-dimensional views of your asset ecosystem, allowing for data-driven capital decisions.",
-    highlights: [
-      "Automated Monthly Packs: Scheduled delivery of executive summaries.",
-      "Real-time Dashboarding: Custom views for finance, operations, and IT.",
-      "Predictive ROI: AI-assisted modeling for asset replacement cycles.",
-      "Vendor Scorecards: Data-backed performance reviews for the supply chain."
-    ],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200"
-  },
-  integrations: {
-    title: "API & Integrations",
-    icon: LinkIcon,
-    desc: "A secure hub for the modern enterprise ecosystem.",
-    longDesc: "Asstella is built to be the heart of your infrastructure. Our robust API and pre-built connectors ensure seamless data flow between HR, IT, and Finance systems.",
-    highlights: [
-      "RESTful API: Full access to every endpoint for custom internal builds.",
-      "SSO & Directory Sync: Automated user provisioning via Azure AD/Okta.",
-      "ERP Connectors: Native sync for SAP, Oracle, and Microsoft Dynamics.",
-      "Webhook Architecture: Trigger external workflows on any asset state change."
-    ],
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200"
-  },
-  hospital: {
-    title: "Hospital Asset Management",
+  healthcare: {
+    title: "Healthcare Assets",
     icon: Stethoscope,
     desc: "Critical care for your medical infrastructure.",
     longDesc: "From surgical robots to mobile ventilators, Asstella ensures life-critical hardware is tracked, sterilized, and maintained to the highest regulatory standards.",
@@ -138,7 +112,7 @@ const featuresData: Record<string, any> = {
     image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1200"
   },
   manufacturing: {
-    title: "Manufacturing ERP Assets",
+    title: "Manufacturing Assets",
     icon: Factory,
     desc: "Orchestrate the heavy machinery of production.",
     longDesc: "Maximize OEE (Overall Equipment Effectiveness) by unifying your production line assets into a single intelligence layer. Monitor uptime, maintenance, and lifecycle value.",
@@ -150,8 +124,8 @@ const featuresData: Record<string, any> = {
     ],
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200"
   },
-  university: {
-    title: "University Capital tracking",
+  education: {
+    title: "Education & Campus",
     icon: School,
     desc: "Manage sprawling campuses with total visibility.",
     longDesc: "Universities are small cities. Asstella tracks everything from laboratory mass spectrometers to classroom furniture across hundreds of buildings and thousands of users.",
@@ -162,11 +136,51 @@ const featuresData: Record<string, any> = {
       "Budget Forecasting: Data-backed capital planning for next-gen campus growth."
     ],
     image: "https://images.unsplash.com/photo-1523050335192-ce11558cd97d?auto=format&fit=crop&q=80&w=1200"
+  },
+  docs: {
+    title: "API Documentation",
+    icon: LinkIcon,
+    desc: "Integrate seamlessly with our robust developer tooling.",
+    longDesc: "Build upon the Asstella platform and connect it with your entire IT ecosystem. Our RESTful API offers endpoints covering the full lifecycle of your enterprise assets.",
+    highlights: [
+      "Endpoints for Everything: Asset creation, updates, and maintenance tickets.",
+      "Webhooks: Setup event-driven workflows seamlessly.",
+      "Deep OAuth2 Integrations: Highly secure connections to your services.",
+      "Real-time Data SDKs: Stream updates right into your reporting engines."
+    ],
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200"
+  },
+  webinars: {
+    title: "Live Webinars",
+    icon: BarChart3,
+    desc: "Interactive sessions with industry asset management experts.",
+    longDesc: "Join the Asstella leadership and prominent supply-chain professionals to deep dive into the modern era of Fixed Asset Management, depreciation, and AI-driven planning.",
+    highlights: [
+      "Interactive Q&A: Pose your pressing questions to operations leaders.",
+      "On-demand Replays: Access the archives of all past sessions instantly.",
+      "Product Previews: Get early looks at upcoming platform integrations.",
+      "Case Studies: See how global enterprises scaled using Asstella."
+    ],
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200"
+  },
+  careers: {
+    title: "Careers",
+    icon: Zap,
+    desc: "Join us in redefining the future of global enterprise operations.",
+    longDesc: "At Asstella, we are always searching for top-tier engineers, designers, and operation experts who want to build critical, high-impact systems that run the real, physical world.",
+    highlights: [
+      "Global Scale Challenges: Build systems that manage millions of physical entities.",
+      "Autonomy and Growth: Take ownership of massive technical architectures.",
+      "Generous Equity & Benefits: We believe in rewarding our foundational team.",
+      "Remote Friendly: Work from wherever you produce your best work."
+    ],
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200"
   }
 };
 
-export default function MarketingFeatureDetail() {
-  const { id } = useParams();
+export default function MarketingFeatureDetail({ feature }: { feature?: string }) {
+  const params = useParams();
+  const id = feature || params.id;
   const data = featuresData[id || "assets"];
 
   if (!data) return <div className="p-20 text-center">Protocol Not Found.</div>;

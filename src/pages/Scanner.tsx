@@ -44,7 +44,7 @@ const initialHardwareDevices: ScannerDevice[] = [
 
 export default function ScannerPage() {
   const navigate = useNavigate();
-  const [activeMode, setActiveMode] = useState<"mobile" | "hardware">("mobile");
+  const [activeMode, setActiveMode] = useState<"mobile" | "hardware" | "generate">("mobile");
   const [devices, setDevices] = useState<ScannerDevice[]>(initialHardwareDevices);
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -105,7 +105,7 @@ export default function ScannerPage() {
           </h2>
           <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-1">Multi-modal asset tracking and device management</p>
         </div>
-        <div className="bg-card-bg border border-border-dim rounded-2xl p-1 flex items-center shadow-sm w-full lg:w-auto">
+        <div className="bg-card-bg border border-border-dim rounded-2xl p-1 flex flex-wrap items-center shadow-sm w-full lg:w-auto">
            <button
              onClick={() => { setActiveMode("mobile"); setIsScanning(false); }}
              className={cn(
@@ -126,7 +126,18 @@ export default function ScannerPage() {
                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
              )}
            >
-             <Usb className="w-3.5 h-3.5" /> Hardware Terminal
+             <Usb className="w-3.5 h-3.5" /> Hardware
+           </button>
+           <button
+             onClick={() => { setActiveMode("generate"); setIsScanning(false); }}
+             className={cn(
+               "flex-1 lg:flex-none px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+               activeMode === "generate" 
+                 ? "bg-brand text-white shadow-lg shadow-brand/20" 
+                 : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+             )}
+           >
+             <QrCode className="w-3.5 h-3.5" /> Generate QR
            </button>
         </div>
       </div>
@@ -198,7 +209,7 @@ export default function ScannerPage() {
                     </div>
                   )}
                </motion.div>
-             ) : (
+             ) : activeMode === "hardware" ? (
                <motion.div 
                  key="hardware_view"
                  initial={{ opacity: 0, scale: 0.95 }}
@@ -280,6 +291,48 @@ export default function ScannerPage() {
                     </div>
                   </div>
                </motion.div>
+             ) : (
+                <motion.div
+                 key="generate_view"
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 exit={{ opacity: 0, scale: 0.95 }}
+                 className="bg-card-bg border border-border-dim rounded-[2.5rem] p-10 shadow-xl overflow-hidden relative flex flex-col min-h-[400px] sm:min-h-[500px]"
+                >
+                  <div className="absolute top-0 left-0 w-48 h-48 bg-brand/5 rounded-full blur-3xl -ml-24 -mt-24"></div>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight relative z-10 mb-2">Generate QR Code</h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest relative z-10 mb-8">Select an asset to generate its tracking label.</p>
+                  
+                  <div className="flex-1 flex flex-col md:flex-row gap-8 relative z-10">
+                     <div className="w-full md:w-1/2 flex flex-col gap-4">
+                        <input type="text" placeholder="SEARCH ASSET CODE..." className="w-full bg-app-bg p-4 rounded-xl text-xs font-bold text-slate-900 dark:text-white border border-border-dim focus:ring-2 focus:ring-brand/20 transition-all outline-none uppercase" />
+                        
+                        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                           {["TR-9000", "LAP-A242", "DEV-0101"].map((code, idx) => (
+                             <div key={idx} className="p-4 border border-border-dim rounded-[1.5rem] hover:bg-slate-50 dark:hover:bg-white/5 hover:border-brand/30 transition-colors cursor-pointer group flex items-center justify-between">
+                               <div>
+                                 <h4 className="text-xs font-black uppercase text-slate-900 dark:text-white group-hover:text-brand transition-colors">{code}</h4>
+                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Dell Equipment / HQ</p>
+                               </div>
+                               <button className="w-8 h-8 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
+                                 <Plus className="w-4 h-4" />
+                               </button>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                     <div className="w-full md:w-1/2 flex flex-col items-center justify-center border-2 border-dashed border-border-dim rounded-[2rem] bg-app-bg p-8 text-center space-y-6">
+                        <div className="w-40 h-40 bg-white border-4 border-slate-200 rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden">
+                           <div className="absolute inset-0 bg-slate-100 animate-pulse"></div>
+                           <QrCode className="w-20 h-20 text-slate-300 relative z-10" />
+                        </div>
+                        <h4 className="text-xl font-black uppercase text-slate-400 tracking-tight">QR LABEL PREVIEW</h4>
+                        <button className="px-8 py-4 w-full bg-brand text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all opacity-50 cursor-not-allowed">
+                           Print Label
+                        </button>
+                     </div>
+                  </div>
+                </motion.div>
              )}
            </AnimatePresence>
         </div>
