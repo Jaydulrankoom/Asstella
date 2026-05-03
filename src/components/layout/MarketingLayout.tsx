@@ -30,6 +30,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
+const MEGA_MENU_ORDER = ["Product", "Solutions", "Pricing", "Resources", "Company"];
+
 const megaMenus = {
   Product: [
     {
@@ -68,6 +70,16 @@ const megaMenus = {
         { name: "Webinars", href: "/resource/webinars", icon: Video, desc: "Live and on-demand sessions." },
       ]
     }
+  ],
+  Company: [
+    {
+      title: "About Asstella",
+      items: [
+        { name: "About Us", href: "/company/about", icon: Building2, desc: "Our story and mission." },
+        { name: "Careers", href: "/company/careers", icon: Users, desc: "Join our growing team." },
+        { name: "Contact", href: "/company/contact", icon: Phone, desc: "Get in touch with us." },
+      ]
+    }
   ]
 };
 
@@ -95,7 +107,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       <nav 
         className={cn(
           "fixed top-0 inset-x-0 z-[60] transition-all duration-300 px-6",
-          scrolled ? "bg-[#0b1120]/95 backdrop-blur-md py-4 border-b border-white/10" : "bg-transparent py-6"
+          scrolled ? "bg-[#0b1120]/95 backdrop-blur-md py-4 border-b border-white/10" : "bg-[#0b1120] py-6"
         )}
       >
         <div className="max-w-[1400px] mx-auto flex items-center justify-between">
@@ -108,7 +120,14 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
-            {Object.keys(megaMenus).map((menuName) => (
+            {MEGA_MENU_ORDER.map((menuName) => {
+              if (menuName === "Pricing") {
+                return (
+                  <Link key={menuName} to="/pricing" className="text-slate-300 hover:text-white transition-colors">Pricing</Link>
+                );
+              }
+
+              return (
               <div 
                 key={menuName}
                 className="relative py-2"
@@ -133,7 +152,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
                       transition={{ duration: 0.2 }}
                       className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-max min-w-[500px]"
                     >
-                      <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 flex gap-8">
+                      <div className="bg-[#0b1120] p-8 rounded-2xl shadow-2xl shadow-black/50 border border-white/10 flex gap-8">
                          {(megaMenus as any)[menuName].map((group: any) => (
                            <div key={group.title} className="flex-1 space-y-4">
                               <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{group.title}</h4>
@@ -142,14 +161,14 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
                                    <Link 
                                      key={item.href} 
                                      to={item.href}
-                                     className="group/item flex gap-3 items-center p-2.5 -ml-2.5 rounded-xl hover:bg-slate-50 transition-all text-slate-900"
+                                     className="group/item flex gap-3 items-center p-2.5 -ml-2.5 rounded-xl hover:bg-white/5 transition-all text-white"
                                    >
-                                      <div className="w-10 h-10 rounded-lg bg-blue-50/50 flex items-center justify-center text-blue-600 transition-all border border-blue-100">
+                                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 transition-all border border-blue-500/20">
                                          <item.icon className="w-5 h-5 opacity-80 group-hover/item:opacity-100" />
                                       </div>
                                       <div>
-                                         <div className="text-sm font-semibold group-hover/item:text-blue-600 transition-colors">{item.name}</div>
-                                         <div className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5">{item.desc}</div>
+                                         <div className="text-sm font-semibold group-hover/item:text-blue-400 transition-colors">{item.name}</div>
+                                         <div className="text-xs text-slate-400 font-normal leading-relaxed mt-0.5">{item.desc}</div>
                                       </div>
                                    </Link>
                                  ))}
@@ -161,9 +180,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
                   )}
                 </AnimatePresence>
               </div>
-            ))}
-            
-            <Link to="/pricing" className="text-slate-300 hover:text-white transition-colors">Pricing</Link>
+            );
+            })}
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
@@ -211,37 +229,36 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             </div>
 
             <div className="flex-1 p-6 space-y-8">
-               {Object.keys(megaMenus).map(menuName => (
-                 <div key={menuName} className="space-y-4">
-                    <h3 className="text-lg font-bold text-white pb-2 border-b border-white/10">{menuName}</h3>
-                    <div className="space-y-6">
-                      {(megaMenus as any)[menuName].map((group: any) => (
-                        <div key={group.title} className="space-y-3">
-                           <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{group.title}</h4>
-                           <div className="grid grid-cols-1 gap-2">
-                              {group.items.map((item: any) => (
-                                <Link key={item.href} to={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 active:scale-95 transition-transform text-slate-300">
-                                   <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shadow-sm">
-                                      <item.icon className="w-4 h-4 text-white" />
-                                   </div>
-                                   <span className="font-semibold text-sm text-white">{item.name}</span>
-                                </Link>
-                              ))}
-                           </div>
-                        </div>
-                      ))}
-                    </div>
-                 </div>
-               ))}
-               
-               <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-white pb-2 border-b border-white/10">Company</h3>
-                  <div className="flex flex-col gap-4">
-                    <Link to="/pricing" onClick={() => setIsMenuOpen(false)} className="font-medium text-slate-300">Pricing</Link>
-                    <Link to="/company/about" onClick={() => setIsMenuOpen(false)} className="font-medium text-slate-300">About Us</Link>
-                    <Link to="/company/contact" onClick={() => setIsMenuOpen(false)} className="font-medium text-slate-300">Contact</Link>
-                  </div>
-               </div>
+               {MEGA_MENU_ORDER.map(menuName => {
+                  if (menuName === "Pricing") {
+                    return (
+                       <Link key="Pricing" to="/pricing" onClick={() => setIsMenuOpen(false)} className="block text-lg font-bold text-white pb-2 border-b border-white/10">Pricing</Link>
+                    )
+                  }
+
+                  return (
+                   <div key={menuName} className="space-y-4">
+                      <h3 className="text-lg font-bold text-white pb-2 border-b border-white/10">{menuName}</h3>
+                      <div className="space-y-6">
+                        {(megaMenus as any)[menuName].map((group: any) => (
+                          <div key={group.title} className="space-y-3">
+                             <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{group.title}</h4>
+                             <div className="grid grid-cols-1 gap-2">
+                                {group.items.map((item: any) => (
+                                  <Link key={item.href} to={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 active:scale-95 transition-transform text-slate-300">
+                                     <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shadow-sm">
+                                        <item.icon className="w-4 h-4 text-white" />
+                                     </div>
+                                     <span className="font-semibold text-sm text-white">{item.name}</span>
+                                  </Link>
+                                ))}
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                   </div>
+                 )
+               })}
             </div>
 
             <div className="p-6 border-t border-white/10 shrink-0 bg-[#0b1120] flex flex-col gap-3">
@@ -261,8 +278,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       </main>
 
       <footer className="bg-[#0b1120] text-slate-300 py-16 px-6 border-t border-white/10">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-9 gap-12 lg:gap-8">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-12 lg:gap-8">
+          <div className="md:col-span-4 lg:col-span-3 space-y-6">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shrink-0">
                  <Hexagon className="text-white w-5 h-5 fill-white/20" />
@@ -279,57 +296,59 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             </div>
           </div>
 
-          <FooterGroup 
-            title="Product" 
-            links={[
-              { label: "Features", href: "/product/features" },
-              { label: "Integrations", href: "/product/integrations" },
-              { label: "Security", href: "/product/security" },
-              { label: "Roadmap", href: "/product/roadmap" },
-            ]} 
-          />
+          <div className="md:col-span-4 lg:col-span-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+            <FooterGroup 
+              title="Product" 
+              links={[
+                { label: "Features", href: "/product/features" },
+                { label: "Integrations", href: "/product/integrations" },
+                { label: "Security", href: "/product/security" },
+                { label: "Roadmap", href: "/product/roadmap" },
+              ]} 
+            />
 
-          <FooterGroup 
-            title="Solutions" 
-            links={[
-              { label: "Education", href: "/solution/education" },
-              { label: "Healthcare", href: "/solution/healthcare" },
-              { label: "Industry", href: "/solution/manufacturing" },
-              { label: "Enterprise", href: "/solution/enterprise" },
-            ]} 
-          />
+            <FooterGroup 
+              title="Solutions" 
+              links={[
+                { label: "Education", href: "/solution/education" },
+                { label: "Healthcare", href: "/solution/healthcare" },
+                { label: "Industry", href: "/solution/manufacturing" },
+                { label: "Enterprise", href: "/solution/enterprise" },
+              ]} 
+            />
+            
+            <FooterGroup 
+              title="Resources" 
+              links={[
+                { label: "Blog", href: "/resource/blog" },
+                { label: "Documentation", href: "/resource/docs" },
+                { label: "API Docs", href: "/resource/api" },
+                { label: "Help Center", href: "/resource/help" },
+              ]} 
+            />
+            
+            <FooterGroup 
+              title="Company" 
+              links={[
+                { label: "About Us", href: "/company/about" },
+                { label: "Careers", href: "/company/careers" },
+                { label: "Contact Us", href: "/company/contact" },
+                { label: "Partners", href: "/company/partners" },
+              ]} 
+            />
+            
+            <FooterGroup 
+              title="Legal" 
+              links={[
+                { label: "Privacy Policy", href: "/legal/privacy" },
+                { label: "Terms of Service", href: "/legal/terms" },
+                { label: "Cookie Policy", href: "/legal/cookies" },
+                { label: "Refund Policy", href: "/legal/refund" },
+              ]} 
+            />
+          </div>
           
-          <FooterGroup 
-            title="Resources" 
-            links={[
-              { label: "Blog", href: "/resource/blog" },
-              { label: "Documentation", href: "/resource/docs" },
-              { label: "API Docs", href: "/resource/api" },
-              { label: "Help Center", href: "/resource/help" },
-            ]} 
-          />
-          
-          <FooterGroup 
-            title="Company" 
-            links={[
-              { label: "About Us", href: "/company/about" },
-              { label: "Careers", href: "/company/careers" },
-              { label: "Contact Us", href: "/company/contact" },
-              { label: "Partners", href: "/company/partners" },
-            ]} 
-          />
-          
-          <FooterGroup 
-            title="Legal" 
-            links={[
-              { label: "Privacy Policy", href: "/legal/privacy" },
-              { label: "Terms of Service", href: "/legal/terms" },
-              { label: "Cookie Policy", href: "/legal/cookies" },
-              { label: "Refund Policy", href: "/legal/refund" },
-            ]} 
-          />
-          
-          <div className="space-y-4 lg:col-span-2">
+          <div className="md:col-span-4 lg:col-span-3 space-y-4">
              <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white pt-1">Subscribe to our newsletter</h4>
              <form className="relative">
                 <input type="email" placeholder="Enter your email" className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors pr-12" />

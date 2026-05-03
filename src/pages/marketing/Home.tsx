@@ -25,45 +25,45 @@ export default function MarketingHome() {
   return (
     <div className="bg-white text-slate-900 font-sans">
       {/* Hero Section */}
-      <section className="bg-[#0b1120] pt-24 pb-20 lg:pt-32 lg:pb-32 px-6 relative overflow-hidden">
+      <section className="bg-[#0b1120] pt-28 pb-20 lg:pt-36 lg:pb-24 px-6 relative overflow-hidden -mt-20">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 -z-10" />
         
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full overflow-visible">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-8"
+            className="space-y-8 lg:col-span-5"
           >
-            <div className="inline-flex px-3 py-1.5 rounded-full bg-blue-900/40 border border-blue-800/50 text-blue-300 text-sm font-medium">
+            <div className="inline-flex px-4 py-2 rounded-full bg-slate-800/80 text-white text-[13px] font-semibold border border-white/5 shadow-inner">
               #1 Fixed Asset Management SaaS
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1]">
+            <h1 className="text-4xl md:text-[45px] font-bold tracking-tight text-white leading-[1.15]">
               Track. Manage. Optimize.<br />
               All Your Assets in <span className="text-blue-500">One Flow.</span>
             </h1>
             
-            <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+            <p className="text-lg text-slate-400 max-w-lg leading-relaxed">
               Asstella is a cloud-based, multi-tenant ERP that helps organizations track, manage and optimize their fixed asset lifecycle with precision and control.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <Link 
                 to="/app" 
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2 text-[15px]"
               >
-                Start Free Trial <ArrowRight className="w-4 h-4" />
+                Start Free Trial <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
-              <button className="w-full sm:w-auto px-8 py-4 bg-transparent border border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2">
-                <Play className="w-4 h-4" /> Book a Demo
+              <button className="w-full sm:w-auto px-6 py-3.5 bg-transparent border border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-[15px]">
+                <Play className="w-4 h-4 fill-current opacity-80" /> Book a Demo
               </button>
             </div>
             
-            <div className="flex flex-wrap items-center gap-6 text-sm text-emerald-400 pt-4">
-               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> <span className="text-white">No Credit Card Required</span></div>
-               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> <span className="text-white">Quick Setup</span></div>
-               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> <span className="text-white">Cancel Anytime</span></div>
+            <div className="flex flex-wrap items-center gap-6 text-[13px] text-white pt-6">
+               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> <span>No Credit Card Required</span></div>
+               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> <span>Quick Setup</span></div>
+               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> <span>Cancel Anytime</span></div>
             </div>
           </motion.div>
 
@@ -71,16 +71,13 @@ export default function MarketingHome() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative lg:-mr-32"
+            className="relative lg:col-span-7"
           >
-            <div className="bg-slate-900/50 rounded-2xl border border-white/10 shadow-2xl overflow-hidden backdrop-blur-sm">
+            <div className="rounded-2xl border border-white/10 shadow-2xl overflow-hidden backdrop-blur-sm shadow-blue-900/10 flex items-center justify-center bg-[#0f172a]/50">
               <img 
-                src="/homeHero.png" 
+                src="https://asstella.com/Dashboard%20Image.webp" 
                 alt="Dashboard Preview" 
-                className="w-full h-auto"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1551288049-bbbda536339a?auto=format&fit=crop&q=80&w=1200";
-                }}
+                className="w-full h-auto object-contain"
               />
             </div>
           </motion.div>
@@ -201,20 +198,14 @@ export default function MarketingHome() {
 
       {/* Real-time Insights */}
       <section className="py-24 px-6 bg-slate-50 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
-          <div className="relative">
-             <div className="bg-white p-2 rounded-2xl shadow-xl border border-slate-100 relative z-10 w-full transform -rotate-2">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative lg:-ml-[4vw]">
+             <div className="bg-white p-2 rounded-2xl shadow-xl border border-slate-200 relative z-10 w-full overflow-hidden">
                <img 
-                 src="/homeHero.png" 
-                 className="rounded-xl w-full" 
-                 alt="Platform" 
-                 onError={(e) => {
-                   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1551288049-bbbda536339a?w=800&q=80";
-                 }}
+                 src="https://asstella.com/Dashboard%20Image.webp" 
+                 className="w-full h-auto object-cover rounded-xl" 
+                 alt="Platform Dashboard" 
                />
-               <div className="absolute -bottom-6 -right-6 w-32 object-cover rounded-xl shadow-2xl border border-slate-100 bg-white p-2 rotate-6">
-                 <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=200&q=80" className="rounded-lg w-full" alt="Mobile" />
-               </div>
              </div>
           </div>
           
@@ -230,13 +221,13 @@ export default function MarketingHome() {
              <button className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mt-4">
                 See How It Works <ArrowRight className="w-4 h-4" />
              </button>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-             <KPICard title="Total Asset Value" value="$245.67M" trend="↑ 6.7% vs last month" valueClass="text-emerald-500" trendClass="text-emerald-500" />
-             <KPICard title="Maintenance Cost" value="$4.7M" trend="↓ 3.2% vs last month" valueClass="text-blue-600" trendClass="text-emerald-500" />
-             <KPICard title="Audit Compliance" value="78%" trend="↑ 8.4% vs last month" valueClass="text-purple-600" trendClass="text-emerald-500" />
-             <KPICard title="Assets Online (Vehicles)" value="42 / 68" trend="↑ 5 vs last month" valueClass="text-orange-500" trendClass="text-emerald-500" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-8">
+               <KPICard title="Total Asset Value" value="$245.67M" trend="↑ 6.7% vs last month" valueClass="text-emerald-500" trendClass="text-emerald-500" />
+               <KPICard title="Maintenance Cost" value="$4.7M" trend="↓ 3.2% vs last month" valueClass="text-blue-600" trendClass="text-emerald-500" />
+               <KPICard title="Audit Compliance" value="78%" trend="↑ 8.4% vs last month" valueClass="text-purple-600" trendClass="text-emerald-500" />
+               <KPICard title="Assets Online (Vehicles)" value="42 / 68" trend="↑ 5 vs last month" valueClass="text-orange-500" trendClass="text-emerald-500" />
+            </div>
           </div>
         </div>
       </section>
