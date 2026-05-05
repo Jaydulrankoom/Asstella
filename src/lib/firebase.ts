@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
+import firebaseConfig from "../../firebase-applet-config.json";
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
@@ -10,10 +10,12 @@ export const auth = getAuth(app);
 // Validate connection
 async function testConnection() {
   try {
-    await getDocFromServer(doc(db, '_connection_test', 'test'));
+    await getDocFromServer(doc(db, "_connection_test", "test"));
   } catch (error) {
-    if (error instanceof Error && error.message.includes('offline')) {
-      console.error("Firebase connection failed. Please check your configuration.");
+    if (error instanceof Error && error.message.includes("offline")) {
+      console.error(
+        "Firebase connection failed. Please check your configuration.",
+      );
     }
   }
 }
@@ -21,12 +23,12 @@ async function testConnection() {
 testConnection();
 
 export enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
+  CREATE = "create",
+  UPDATE = "update",
+  DELETE = "delete",
+  LIST = "list",
+  GET = "get",
+  WRITE = "write",
 }
 
 export interface FirestoreErrorInfo {
@@ -39,10 +41,14 @@ export interface FirestoreErrorInfo {
     emailVerified?: boolean | null;
     isAnonymous?: boolean | null;
     tenantId?: string | null;
-  }
+  };
 }
 
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+export function handleFirestoreError(
+  error: unknown,
+  operationType: OperationType,
+  path: string | null,
+) {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
@@ -52,8 +58,8 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
       isAnonymous: auth.currentUser?.isAnonymous,
     },
     operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
+    path,
+  };
+  console.error("Firestore Error: ", JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }

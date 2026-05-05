@@ -1,51 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
-import 'features/assets/screens/asset_list_screen.dart';
-import 'features/assets/screens/add_asset_screen.dart';
-import 'features/assets/screens/asset_profile_screen.dart';
+import 'core/auth/auth_gate.dart';
 
-void main() {
-  runApp(const ProviderScope(child: AssetsFlowApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const ProviderScope(child: AsstellaApp()));
 }
 
-class AssetsFlowApp extends StatelessWidget {
-  const AssetsFlowApp({super.key});
+final _router = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const AuthGate(),
+    ),
+  ],
+);
+
+class AsstellaApp extends StatelessWidget {
+  const AsstellaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'AssetsFlow ERP',
+      title: 'Asstella ERP',
+      debugShowCheckedModeBanner: false,
+      routerConfig: _router,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A3FF0)),
         useMaterial3: true,
-        fontFamily: 'Inter',
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        fontFamily: 'DM Sans', // Fallback font
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(fontFamily: 'Syne', fontWeight: FontWeight.bold),
         ),
       ),
-      routerConfig: _router,
     );
   }
 }
-
-final _router = GoRouter(
-  initialLocation: '/assets',
-  routes: [
-    GoRoute(
-      path: '/assets',
-      builder: (context, state) => const AssetListScreen(),
-      routes: [
-        GoRoute(
-          path: 'add',
-          builder: (context, state) => const AddAssetScreen(),
-        ),
-        GoRoute(
-          path: 'profile/:id',
-          builder: (context, state) => AssetProfileScreen(assetCode: state.pathParameters['id']!),
-        ),
-      ],
-    ),
-  ],
-);

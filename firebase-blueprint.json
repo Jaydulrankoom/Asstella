@@ -41,9 +41,30 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["assetId", "status", "tenantId"]
+    },
+    "SupportTicket": {
+      "title": "Support Ticket",
+      "description": "Global support request from a tenant",
+      "type": "object",
+      "properties": {
+        "tenant_id": { "type": "string" },
+        "subject": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "in_progress", "waiting", "resolved", "closed"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "assigned_to": { "type": "string" },
+        "sla_response_due": { "type": "string", "format": "date-time" },
+        "sla_resolution_due": { "type": "string", "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "firestore": {
+    "support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Global support requests"
+    },
     "tenants/{tenantId}": {
       "schema": "Tenant",
       "description": "Root tenant document"

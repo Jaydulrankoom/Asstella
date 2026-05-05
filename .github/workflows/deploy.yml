@@ -1,18 +1,164 @@
-name: Deploy Vite App
+name: Deploy Asstella ERP
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: asstella-production
+  REGION: asia-south1
+  GAR_LOCATION: asia-south1-docker.pkg.dev
+  REPOSITORY: asstella-repo
+  IMAGE: asstella-api
+  SERVICE: asstella-api
 
 jobs:
-  build:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Build project
-        run: npm run build
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Setup Java (for Firebase Emulator)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+      - name: Run Tests with Firebase Emulator
+        uses: w9jds/firebase-action@master
+        with:
+          args: emulators:exec "npm test"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'deployer@asstella-production.iam.gserviceaccount.com'
+
+      - name: Docker Auth
+        run: |-
+          gcloud auth configure-docker ${{ env.GAR_LOCATION }}
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t "${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}" .
+          docker push "${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}"
+
+  deploy-backend:
+    name: Deploy Backend to Cloud Run
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/123456789012/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'deployer@asstella-production.iam.gserviceaccount.com'
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.GAR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          flags: >-
+            --min-instances=1
+            --max-instances=20
+            --memory=512Mi
+            --concurrency=80
+            --timeout=300s
+            --set-secrets=FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest,ENCRYPTION_KEY_32BYTES=ENCRYPTION_KEY_32BYTES:latest,GMAIL_USER=GMAIL_USER:latest,GMAIL_APP_PASSWORD=GMAIL_APP_PASSWORD:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,APP_VERSION=APP_VERSION:latest,NODE_ENV=NODE_ENV:latest
+
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build Flutter Web
+        working-directory: ./flutter_app
+        run: |
+          flutter config --enable-web
+          flutter pub get
+          flutter build web --release
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  deploy-functions:
+    name: Deploy Firebase Functions
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy Functions
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  notify:
+    name: Slack Notification
+    needs: [deploy-backend, deploy-frontend, deploy-functions]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Message
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "Deployment to production finished with status: ${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

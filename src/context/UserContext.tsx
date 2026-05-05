@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-export type Role = "Super Admin" | "Company Admin" | "Employee" | "Asset Manager" | "Procurement Officer" | "Finance Viewer" | "Field Technician";
+export type Role =
+  | "Super Admin"
+  | "Company Admin"
+  | "Employee"
+  | "Asset Manager"
+  | "Procurement Officer"
+  | "Finance Viewer"
+  | "Field Technician"
+  | "Platform Owner";
 
 interface User {
   id: string;
@@ -24,8 +32,8 @@ const mockUser: User = {
   id: "1",
   name: "Sabbir Khan",
   email: "Admin@asstella.com",
-  role: "Super Admin",
-  permissions: ["all"]
+  role: "Platform Owner",
+  permissions: ["all"],
 };
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -46,7 +54,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ currentUser, setCurrentUser, hasPermission, isRole }}>
+    <UserContext.Provider
+      value={{ currentUser, setCurrentUser, hasPermission, isRole }}
+    >
       {children}
     </UserContext.Provider>
   );

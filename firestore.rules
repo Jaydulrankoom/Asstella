@@ -2,103 +2,69 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // -------------------------------------------------------------------------
-    // GLOBALS & REUSABLE HELPERS
-    // -------------------------------------------------------------------------
-    
-    function isSignedIn() {
-      return request.auth != null;
+    // Default global deny to ensure security gaps are closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSameTenant(tenantId) {
+      return request.auth != null && request.auth.token.tenant_id == tenantId;
     }
 
     function isPlatformAdmin() {
-      return isSignedIn() && request.auth.token.is_platform_admin == true;
+      return request.auth != null && request.auth.token.is_platform_admin == true;
     }
 
-    function getTenantId() {
-      return request.auth.token.tenant_id;
+    function hasPermission(permKey) {
+      return request.auth != null 
+             && request.auth.token.permissions != null 
+             && request.auth.token.permissions[permKey] == true;
     }
 
-    function belongsToTenant(tenantId) {
-      return isSignedIn() && getTenantId() == tenantId;
+    function isResourceOwner() {
+      return request.auth != null && request.auth.uid == resource.data.created_by;
     }
 
-    function hasPermission(permission) {
-      return isSignedIn() && permission in request.auth.token.permissions;
-    }
-
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    // Default deny
-    match /{document=**} {
-      allow read, write: if isPlatformAdmin();
-    }
-
-    // -------------------------------------------------------------------------
-    // TENANT SCOPED COLLECTIONS
-    // -------------------------------------------------------------------------
-    
+    // Base Tenant Root Operations
     match /tenants/{tenantId} {
-      allow get: if belongsToTenant(tenantId);
-      allow update: if belongsToTenant(tenantId) && hasPermission('tenant_settings_write');
+      allow read: if isPlatformAdmin();
+      allow write: if isPlatformAdmin();
 
-      // ASSETS MODULE
+      // Asset Data Subcollections
       match /assets/{assetId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('assets_read');
-        allow create: if belongsToTenant(tenantId) && hasPermission('assets_write') 
-          && request.resource.data.tenant_id == tenantId;
-        allow update: if belongsToTenant(tenantId) && hasPermission('assets_write')
-          && request.resource.data.tenant_id == resource.data.tenant_id; // Immutable tenant_id
+        allow read: if isSameTenant(tenantId);
+        allow create: if isSameTenant(tenantId) && hasPermission("asset_register.create");
+        allow update: if isSameTenant(tenantId) && hasPermission("asset_register.edit");
+        allow delete: if isSameTenant(tenantId) && hasPermission("asset_register.delete");
       }
 
-      // MAINTENANCE MODULE
-      match /maintenance_tickets/{ticketId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('maintenance_read');
-        allow write: if belongsToTenant(tenantId) && hasPermission('maintenance_write');
-      }
-
-      // VEHICLES / GPS MODULE
-      match /vehicles/{vehicleId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('gps_read');
-        allow write: if belongsToTenant(tenantId) && hasPermission('gps_write');
-      }
-
-      match /gps_tracking_logs/{logId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('gps_read');
-        allow write: if false; // Server-only via Admin SDK
-      }
-
-      // COMPLIANCE & AUDIT
-      match /audit_items/{itemId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('compliance_read');
-        allow write: if belongsToTenant(tenantId) && hasPermission('compliance_write');
-      }
-
-      // SYSTEM LOGS
-      match /activity_logs/{logId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('logs_read');
-        allow write: if false; // Server-only
-      }
-
+      // Depreciation Logs (Server-side generated only)
       match /depreciation_logs/{logId} {
-        allow read: if belongsToTenant(tenantId) && hasPermission('finance_read');
-        allow write: if false; // Server-only
+        allow read: if isSameTenant(tenantId);
+        allow write: if false; // Server-only Admin SDK
       }
 
-      // NOTIFICATIONS
+      // Audit and Access Trace Logging (Server-only write)
+      match /activity_logs/{logId} {
+        allow read: if isSameTenant(tenantId) && hasPermission("audit_log.view");
+        allow write: if false; // Server-only Admin SDK
+      }
+
+      // Physical Audit Campaigns
+      match /audit_campaigns/{campaignId} {
+        allow read: if isSameTenant(tenantId) && hasPermission("audit.view");
+        allow create: if isSameTenant(tenantId) && hasPermission("audit.create");
+        allow update: if isSameTenant(tenantId) && hasPermission("audit.edit");
+        allow delete: if isSameTenant(tenantId) && hasPermission("audit.delete");
+      }
+
+      // Multi-Channel Notifications User Inboxes
       match /notifications/{notifId} {
-        allow read: if belongsToTenant(tenantId) && resource.data.userId == request.auth.uid;
-        allow update: if belongsToTenant(tenantId) && resource.data.userId == request.auth.uid 
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_read']);
+        // Enforce strong isolation per-user inbox
+        allow read: if isSameTenant(tenantId) && resource.data.user_id == request.auth.uid;
+        allow write: if false; // Server-only notification engine
       }
-    }
-
-    // -------------------------------------------------------------------------
-    // PLATFORM ADMIN PATHS
-    // -------------------------------------------------------------------------
-    match /admin/{document=**} {
-      allow read, write: if isPlatformAdmin();
     }
   }
 }

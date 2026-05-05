@@ -1,37 +1,68 @@
-# Google Cloud Monitoring Alert Policies
-combiner: OR
-enabled: true
-conditions:
-  - displayName: "API High Latency (p99 > 3s)"
-    conditionThreshold:
-      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/request_latencies"'
-      comparison: COMPARISON_GT
-      thresholdValue: 3000
-      duration: "60s"
-      aggregations:
-        - alignmentPeriod: "60s"
-          perSeriesAligner: ALIGN_PERCENTILE_99
+policies:
+  - displayName: "API Latency p99 > 3000ms"
+    combiner: OR
+    conditions:
+      - displayName: "Cloud Run Revision - Request Latency"
+        conditionThreshold:
+          filter: >-
+            resource.type = "cloud_run_revision" AND
+            metric.type = "run.googleapis.com/request_latencies"
+          aggregations:
+            - alignmentPeriod: 300s
+              crossSeriesReducer: REDUCE_PERCENTILE_99
+              perSeriesAligner: ALIGN_DELTA
+          comparison: COMPARISON_GT
+          duration: 0s
+          thresholdValue: 3000
+    notificationChannels:
+      # Replace with actual PagerDuty notification channel
+      - "projects/.../notificationChannels/..."
 
-  - displayName: "API High Error Rate (> 2%)"
-    conditionThreshold:
-      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/request_count" AND metric.labels.response_code_class = "5xx"'
-      comparison: COMPARISON_GT
-      thresholdValue: 0.02
-      duration: "300s"
-      aggregations:
-        - alignmentPeriod: "300s"
-          perSeriesAligner: ALIGN_RATE
+  - displayName: "Error Rate > 2%"
+    combiner: OR
+    conditions:
+      - displayName: "Cloud Run Revision - Error Rate"
+        conditionThreshold:
+          filter: >-
+            resource.type = "cloud_run_revision" AND
+            metric.type = "run.googleapis.com/request_count" AND
+            metric.labels.response_code_class = "5xx"
+          aggregations:
+            - alignmentPeriod: 300s
+              crossSeriesReducer: REDUCE_SUM
+              perSeriesAligner: ALIGN_RATE
+          comparison: COMPARISON_GT
+          duration: 300s
+          thresholdValue: 0.02
 
-  - displayName: "Firestore Read Quota Alert (> 80%)"
-    conditionThreshold:
-      filter: 'resource.type = "firestore_instance" AND metric.type = "firestore.googleapis.com/document/read_ops_count"'
-      comparison: COMPARISON_GT
-      thresholdValue: 40000 # Spark plan limit is 50k
-      duration: "60s"
+  - displayName: "Cloud Run Instance Count > 15"
+    combiner: OR
+    conditions:
+      - displayName: "Cloud Run Revision - Instance Count"
+        conditionThreshold:
+          filter: >-
+            resource.type = "cloud_run_revision" AND
+            metric.type = "run.googleapis.com/container/instance_count"
+          aggregations:
+            - alignmentPeriod: 60s
+              crossSeriesReducer: REDUCE_MAX
+              perSeriesAligner: ALIGN_MAX
+          comparison: COMPARISON_GT
+          duration: 60s
+          thresholdValue: 15
 
-  - displayName: "Cloud Run Scale Warning (> 15 instances)"
-    conditionThreshold:
-      filter: 'resource.type = "cloud_run_revision" AND metric.type = "run.googleapis.com/container/instance_count"'
-      comparison: COMPARISON_GT
-      thresholdValue: 15
-      duration: "0s"
+  - displayName: "Firebase Auth Failure Spike"
+    combiner: OR
+    conditions:
+      - displayName: "Firebase Authentication - Failed Sign In"
+        conditionThreshold:
+          filter: >-
+            resource.type = "firebase_auth" AND
+            metric.type = "firebaseauth.googleapis.com/auth/failed_signin_count"
+          aggregations:
+            - alignmentPeriod: 300s
+              crossSeriesReducer: REDUCE_SUM
+              perSeriesAligner: ALIGN_RATE
+          comparison: COMPARISON_GT
+          duration: 300s
+          thresholdValue: 50
